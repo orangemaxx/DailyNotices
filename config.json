@@ -1,0 +1,14 @@
+{
+    "flask_run": {
+        "debug": true,
+        "host": "localhost",
+        "port": 8000
+    },
+    "sqlcfg": {
+        "host": "localhost",
+        "port": 3306,
+        "user": "root",
+        "passw": "DatabaseRoot"
+    },
+    "secret_key": "ztJE5202aXGBKmqTK3ladCgjeTzVUEEJX3K7SD4uIhd1CwBUIt"
+}

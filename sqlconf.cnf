@@ -1,0 +1,3 @@
+[mysqld]
+datadir = "C:\School\ComDatabase\Data"
+port = 3306

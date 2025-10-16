@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container text-center">
+  <div class="px-1 py-2 my-3 text-center">
+    <h1 class="display-5 fw-bold text-body-emphasis">Daily Notices: {{date_display}}</h1>
+    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center flex-column">
+      <div class="container-md w-auto">
+        <form action="/" class="px-5" id="view_date_form">
+          <input type="date" id="view_date" name="view_date" value="{{ view_date }}" min="2020-01-01" class="form-control">
+        </form>
+      </div>
+      <div class="">
+        <a href="/?view_date={{prev_date}}" class="btn btn-outline-secondary btn-lg px-4">Previous</a>
+        <a href="/?view_date={{current_date}}"" class=" btn btn-primary btn-lg px-4 gap-3">Today</a>
+        <a href="/?view_date={{next_date}}" class="btn btn-outline-secondary btn-lg px-4">Next</a>
+      </div>
+    </div>
+  </div>
+  <div class="row g-3 justify-content-start align-items-start"> {% if session['user'] %} <div class="d-grid gap-2 d-sm-flex justify-content-sm-start">
+      <a href="/create" class="btn btn-success btn-lg px-4">Create</a>
+    </div> {% endif %} 
+    {% if notices %}
+    {% for i in notices %} {% include 'notice.html' %} {% endfor %} </div>
+    {% else %}
+    <h1>No Notices Today</h1>
+    {% endif %}
+</div>
+<script>
+  document.getElementById('view_date').addEventListener('change', function() {
+    document.getElementById("view_date_form").submit();
+  })
+</script>
+{% endblock %}

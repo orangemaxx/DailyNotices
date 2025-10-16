@@ -1,0 +1,59 @@
+<div class="col-auto p-2">
+  <div class="card" style="width: 25rem;">
+    <div class="card-body">
+      <h5 class="card-title">{{i['title']}}</h5>
+      <p class="card-text">{{i['body']|safe}}</p>
+      <div>
+      <small><strong>{{i['catergory']}}</strong> • Posted By: <strong>
+        {% if session['user'] %}
+        {{i['firstname']}}
+        {% else %}
+        {{i['prefix']}}
+        {% endif %} 
+        {{i['lastname']}} </strong></small>
+      <small>• <strong>{{i['startdate'].strftime("%d %B %Y")}}</strong></small>
+        </div>
+        {% if i['author'] == session['user'] %}
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-danger" id="deleteBtn" data-bs-toggle="modal" data-bs-target="#deleteConfirm_{{i['notice_id']}}">Delete</button>
+        </div>
+       
+
+<div id="deleteConfirm_{{i['notice_id']}}" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Are you sure?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete <strong>{{i['title']}}</strong>?</p>
+      </div>
+      <div class="modal-footer">
+        <form action="/delete", method="post">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <input type="hidden" name="notice_id" value="{{i['notice_id']}}">
+        <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+        {% endif %}
+    </div>
+  </div>
+</div>
+<script>
+    
+
+const myModal = document.getElementById('deleteConfirm')
+const modalInput = document.getElementById('deleteBtn')
+
+myModal.addEventListener('shown.bs.modal', () => {
+  modalInput.focus()
+})
+
+
+</script>

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .ck-editor__editable {
+    min-height: 300px;
+  }
+</style>
+<div class="container p-5 justify-content-center align-items-center">
+  <div class="d-flex align-items-center justify-content-between">
+    <h1>Add A Notice</h1>
+  </div>
+  <form action="/create" method="post">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-8">
+        <div class="form-floating">
+          <input name="post_title" type="text" class="form-control" id="floatingInput" placeholder="Title" maxlength="100" required>
+          <label for="floatingInput">Post Title</label>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <label for="catergory">Catergory:</label>
+        <select id="catergory" name="catergory" class="form-select" aria-label="Default select example"> {% for i in catergories %} <option value="{{i["name"]}}">{{i["name"]}}</option> {% endfor %} </select>
+      </div>
+    </div>
+    <textarea id="editor" name="content" maxlength="1000"></textarea>
+    <div class="d-flex justify-content-between mt-3">
+      <a href="/" class="btn btn-danger btn-lg">Back</a>
+      <div class="d-flex justify-content-end">
+      <p class="px-3">Posting As <strong>{{session['prefix']}} {{session['last_name']}}</strong>
+        <div class="row">
+          <div class="col">
+            <label for="start_date">Start Date</label>
+            <input type="date" id="start_date" name="start_date" value="{{ todays_date }}" min="{{todays_date}}" class="form-control" required>
+          </div>
+        </div>
+        <div class="col">
+          <label for="end_date">End Date</label>
+          <input type="date" id="end_date" name="end_date" value="{{ next_date }}" min="{{todays_date}}" class="form-control" required>
+        </div>
+      </p>
+      <button type="submit" class="btn btn-lg btn-success">Submit</button>
+    </div>
+</div>
+</form>
+<script src="https://cdn.ckeditor.com/ckeditor5/38.0.1/classic/ckeditor.js"></script>
+<script>
+  ClassicEditor.create(document.querySelector('#editor'), {
+    toolbar: {
+      removeItems: ['uploadImage',
+        "mediaEmbed",
+        "insertTable",
+        "link"
+      ],
+    },
+  });
+</script>
+</div>
+{% endblock %}
