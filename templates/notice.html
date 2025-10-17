@@ -15,9 +15,7 @@
         </div>
         {% if i['author'] == session['user'] %}
         <div class="d-flex justify-content-end">
-          <!-- <form action="/create" method="post" class="px-2">
-            <button class="btn btn-primary">Edit</button></form> -->
-            
+            <a class="btn btn-primary me-2" href="/create?notice_id={{ i['notice_id'] }}">Edit</a>
             <button class="btn btn-danger" id="deleteBtn_{{i['notice_id']}}" data-bs-toggle="modal" data-bs-target="#deleteConfirm_{{i['notice_id']}}">Delete</button>
             
         </div>

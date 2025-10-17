@@ -3,16 +3,17 @@ import pymysql
 import json
 import hashlib
 from datetime import datetime, timedelta
+import ast
 
 def encrypt(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
-# Initialising Stuff
+# Initialising Fkask and Config
 try:
     with open("config.json", "r") as file:
-        config = json.load(file)
+        config = json.load(file) #open config file config.json
 except FileNotFoundError:
-    print("No Config Found")
+    print("No Config Found") # error handling
 
 def create_connection():
     sqlcfg = config['sqlcfg']
@@ -23,24 +24,25 @@ def create_connection():
         password=sqlcfg['passw'],
         database="daily_notices",
         cursorclass=pymysql.cursors.DictCursor
-    )
+    ) # sql connection
 
 class ClassifiedError(Exception):
     """Used when user is not permitted to view the content
     as they're not logged in.
-    """
+    """ # define error for if user is not logged in
 
 # Create Flask App
 app = Flask(__name__)
-app.secret_key = config['secret_key']
+app.secret_key = config['secret_key'] # initialising flask
 
+# HOME PAGE
 @app.route("/", methods=['GET'])
 def index():
     current = datetime.today().date()
-    date_str = request.args.get("view_date")
+    date_str = request.args.get("view_date") # get the current date and the user's requested date
     if date_str:
         try:
-            view_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            view_date = datetime.strptime(date_str, "%Y-%m-%d").date() # convert the date to the proper format for the website
         except ValueError:
             view_date = datetime.today().date()
     else:
@@ -54,25 +56,25 @@ def index():
             INNER JOIN teachers ON notices.author=teachers.teacher_code
             WHERE startdate <= %s AND enddate >= %s
             ORDER BY startdate DESC
-        """
+        """ # This gets the notices for the view date from the notices table
         cursor.execute(query, (view_date, view_date))
         result = cursor.fetchall()
         print(result)
-    prev_date = (view_date - timedelta(days=1)).strftime("%Y-%m-%d")
+    prev_date = (view_date - timedelta(days=1)).strftime("%Y-%m-%d") # get the next and previous dates for the buttons
     next_date = (view_date + timedelta(days=1)).strftime("%Y-%m-%d")
 
-    args = {
-        "date_display": view_date.strftime("%d-%m-%Y"),
-        "view_date": view_date.strftime("%Y-%m-%d"),  
-        "notices": result,
-        "session": session,
-        "current_date": current,
-        "prev_date": prev_date,
+    args = { # arguments to be passed to the website
+        "date_display": view_date.strftime("%d-%m-%Y"), # for top of the page
+        "view_date": view_date.strftime("%Y-%m-%d"), #the date we are actually viewing, to be passed to the calender
+        "notices": result, # notices
+        "session": session, # session, login and whatnot
+        "current_date": current, # current date for real
+        "prev_date": prev_date, # for buttons
         "next_date": next_date
     }
-    return render_template("index.html", **args)
+    return render_template("index.html", **args) # render
 
-@app.route("/create", methods=['GET', 'POST'])
+@app.route("/create", methods=['GET', 'POST']) # creating post
 def create():
     if session.get('user'):
         print(request.form)
@@ -83,15 +85,23 @@ def create():
             content = request.form.get('content')
             start_date = request.form.get('start_date')
             end_date = request.form.get("end_date")
+            existing_id = request.form.get("existing_id")
+
             with create_connection() as connection:
                 cursor = connection.cursor()
-                query = """
-                INSERT INTO notices (`author`, `title`, `body`, `catergory`, `startdate`, `enddate`)
-                VALUES (%s, %s, %s, %s, %s, %s);"""
-                values = (session.get('user'), title, content, catergory, start_date, end_date,)
-                cursor.execute(query, values)
+                if existing_id:
+                    query = """UPDATE notices
+                    SET title = %s, catergory = %s, body = %s, startdate = %s, enddate = %s
+                    WHERE notice_id = %s AND author = %s"""
+                    values = (title, catergory, content, start_date, end_date, existing_id, session.get("user"))
+                    cursor.execute(query, values)
+                else:
+                    query = """
+                    INSERT INTO notices (`author`, `title`, `body`, `catergory`, `startdate`, `enddate`)
+                    VALUES (%s, %s, %s, %s, %s, %s);"""
+                    values = (session.get('user'), title, content, catergory, start_date, end_date,)
+                    cursor.execute(query, values)
                 connection.commit()
-            print(content)
             return redirect("/")
         else:
             with create_connection().cursor() as cursor:
@@ -104,6 +114,14 @@ def create():
                 "todays_date": datetime.today().date(),
                 "next_date": (datetime.today().date() + timedelta(days=1)).strftime("%Y-%m-%d")
             }
+            notice_id = request.args.get("notice_id")
+            if notice_id:
+                with create_connection().cursor() as cursor:
+                    query = "SELECT * FROM notices WHERE notice_id = %s AND author = %s"
+                    cursor.execute(query, (notice_id, session.get('user')))
+                    args['notice_edit'] = cursor.fetchone()
+                
+                
             return render_template("create.html", **args)
         
     else:

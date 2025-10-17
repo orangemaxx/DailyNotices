@@ -10,19 +10,22 @@
     <h1>Add A Notice</h1>
   </div>
   <form action="/create" method="post">
+    {% if notice_edit %}
+    <input type="hidden" name="notice_id" value="{{ notice_edit['notice_id'] }}">
+  {% endif %}
     <div class="row g-3 align-items-end">
       <div class="col-md-8">
         <div class="form-floating">
-          <input name="post_title" type="text" class="form-control" id="floatingInput" placeholder="Title" maxlength="100" required>
+          <input name="post_title" type="text" class="form-control" id="floatingInput" placeholder="Title" maxlength="100" required value="{{notice_edit['title'] if notice_edit else ''}}">
           <label for="floatingInput">Post Title</label>
         </div>
       </div>
       <div class="col-md-4">
         <label for="catergory">Catergory:</label>
-        <select id="catergory" name="catergory" class="form-select" aria-label="Default select example"> {% for i in catergories %} <option value="{{i["name"]}}">{{i["name"]}}</option> {% endfor %} </select>
+        <select id="catergory" name="catergory" class="form-select" aria-label="Catergory Select"> {% for i in catergories %} <option value="{{i['name']}}" {% if notice_edit and i['name'] == notice_edit["catergory"] %}selected{% endif %}>{{i["name"]}}</option> {% endfor %} </select>
       </div>
     </div>
-    <textarea id="editor" name="content" maxlength="1000"></textarea>
+    <textarea id="editor" name="content" maxlength="1000">{{notice_edit['body'] if notice_edit else ''}}</textarea>
     <div class="d-flex justify-content-between mt-3">
       <a href="/" class="btn btn-danger btn-lg">Back</a>
       <div class="d-flex justify-content-end">
@@ -30,12 +33,12 @@
         <div class="row">
           <div class="col">
             <label for="start_date">Start Date</label>
-            <input type="date" id="start_date" name="start_date" value="{{ todays_date }}" min="{{todays_date}}" class="form-control" required>
+            <input type="date" id="start_date" name="start_date" value="{{ notice_edit['startdate'] if notice_edit else todays_date }}" min="{{todays_date}}" class="form-control" required>
           </div>
         </div>
         <div class="col">
           <label for="end_date">End Date</label>
-          <input type="date" id="end_date" name="end_date" value="{{ next_date }}" min="{{todays_date}}" class="form-control" required>
+          <input type="date" id="end_date" name="end_date" value="{{ notice_edit['enddate'] if notice_edit else next_date }}" min="{{todays_date}}" class="form-control" required>
         </div>
       </p>
       <button type="submit" class="btn btn-lg btn-success">Submit</button>
