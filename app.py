@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, session
+from flask import Flask, request, redirect, render_template, session, flash
 import pymysql
 import json
 import hashlib
@@ -25,6 +25,10 @@ def create_connection():
         cursorclass=pymysql.cursors.DictCursor
     )
 
+class ClassifiedError(Exception):
+    """Used when user is not permitted to view the content
+    as they're not logged in.
+    """
 
 # Create Flask App
 app = Flask(__name__)
@@ -71,6 +75,7 @@ def index():
 @app.route("/create", methods=['GET', 'POST'])
 def create():
     if session.get('user'):
+        print(request.form)
         if request.method == "POST":
             print(request.form)
             title = request.form.get('post_title')
@@ -102,7 +107,7 @@ def create():
             return render_template("create.html", **args)
         
     else:
-        return redirect("/")
+        raise ClassifiedError("Not Logged In")
     
 @app.route("/delete", methods=['POST'])
 def deleteNotice():
@@ -128,8 +133,9 @@ def delete(notice_id):
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
+        if request.form.get('passw') == "": passw = None
+        else: passw = encrypt(request.form.get('passw'))
         user = request.form.get('user').upper()
-        passw = encrypt(request.form.get('passw'))
         print(user)
         with create_connection().cursor() as cursor:
             query = "SELECT * FROM teachers WHERE teacher_code = %s LIMIT 1"
@@ -155,6 +161,34 @@ def logout():
     session.clear()
     return redirect("/")
 
+@app.route("/profile", methods=['GET', "POST"])
+def profile():
+    if session.get('user'):
+        if request.method == "GET":
+            with create_connection().cursor() as cursor:
+                query = """SELECT * FROM teachers
+                WHERE teacher_code = %s"""
+                cursor.execute(query, (session.get('user')))
+                result = cursor.fetchone()
+            args = {
+                "profile": result
+            }
+            return render_template("profile.html", **args)
+        elif request.method == "POST":
+            data = request.form
+            with create_connection() as conn:
+                with conn.cursor() as cursor:
+                    user = session.get('user')
+                    query = """UPDATE teachers 
+                    SET firstname = %s, lastname = %s, prefix = %s
+                    WHERE teacher_code = %s"""
+                    values = (data.get('first_name'), data.get('last_name'), data.get('prefix'), user)
+                    cursor.execute(query, values)
+                    conn.commit()
+            return redirect("/")
+    else:
+        raise ClassifiedError("Not Logged In")
+
 @app.errorhandler(pymysql.err.OperationalError)
 def sqlConnectionError(error):
     return render_template("errors/databaseerror.html"), 500
@@ -162,6 +196,10 @@ def sqlConnectionError(error):
 @app.errorhandler(404)
 def pageNotFound(error):
     return render_template("errors/404.html"), 404
+
+@app.errorhandler(ClassifiedError)
+def classifiedError(error):
+    return render_template("errors/classified.html"), 401
 
 
 try:

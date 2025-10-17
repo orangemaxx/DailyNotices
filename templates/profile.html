@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-center p-5 mw-100 flex-column">
+    <h1>Edit Profile</h1>
+    
+    
+<div>
+    <form action="/profile" method="post">
+        <div class="d-flex"><div class="mb-3 px-2">
+    <label for="firstname" class="form-label">First Name</label>
+    <input type="text" class="form-control" id="firstname" name="first_name" required value="{{profile['firstname']}}">
+  </div>
+<div class="mb-3 px-2">
+    <label for="last_name" class="form-label">Last Name</label>
+    <input type="text" class="form-control" id="last_name" name="last_name" required value="{{profile['lastname']}}">
+  </div>
+<div class="mb-3 px-2">
+    <label for="prefix" class="form-label">Prefix</label>
+    <input type="text" class="form-control" id="prefix" name="prefix" required value="{{profile['prefix']}}">
+  </div></div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+</div>
+
+
+
+</div>
+{% endblock %}

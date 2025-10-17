@@ -15,7 +15,11 @@
         </div>
         {% if i['author'] == session['user'] %}
         <div class="d-flex justify-content-end">
-            <button class="btn btn-danger" id="deleteBtn" data-bs-toggle="modal" data-bs-target="#deleteConfirm_{{i['notice_id']}}">Delete</button>
+          <!-- <form action="/create" method="post" class="px-2">
+            <button class="btn btn-primary">Edit</button></form> -->
+            
+            <button class="btn btn-danger" id="deleteBtn_{{i['notice_id']}}" data-bs-toggle="modal" data-bs-target="#deleteConfirm_{{i['notice_id']}}">Delete</button>
+            
         </div>
        
 
@@ -48,8 +52,8 @@
 <script>
     
 
-const myModal = document.getElementById('deleteConfirm')
-const modalInput = document.getElementById('deleteBtn')
+const myModal = document.getElementById('deleteConfirm_{{i["noticeid"]}}')
+const modalInput = document.getElementById('deleteBtn_{{i["notice_id"]}}')
 
 myModal.addEventListener('shown.bs.modal', () => {
   modalInput.focus()
