@@ -22,7 +22,17 @@
 </form>
 </div>
 
-
-
+<div class="container">
+  <h1>Your Notices</h1>
+  <div class="row g-3 justify-content-center align-items-center">
+    {% if notices %}
+    {% for i in notices %} {% include 'notice.html' %} {% endfor %} </div>
+    {% else %}
+    <h1>No Notices Posted Yet!</h1>
+    {% endif %}
+  </div>
 </div>
+
+
+
 {% endblock %}

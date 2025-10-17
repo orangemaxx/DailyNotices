@@ -1,10 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-<style>
-  .ck-editor__editable {
-    min-height: 300px;
-  }
-</style>
+
 <div class="container p-5 justify-content-center align-items-center">
   <div class="d-flex align-items-center justify-content-between">
     <h1>Add A Notice</h1>
@@ -29,7 +25,7 @@
     <div class="d-flex justify-content-between mt-3">
       <a href="/" class="btn btn-danger btn-lg">Back</a>
       <div class="d-flex justify-content-end">
-      <p class="px-3">Posting As <strong>{{session['prefix']}} {{session['last_name']}}</strong>
+      <p class="px-3">Posting As <strong>{{session['prefix']}} {{session['last_name']}}</strong> </p>
         <div class="row">
           <div class="col">
             <label for="start_date">Start Date</label>
@@ -40,7 +36,7 @@
           <label for="end_date">End Date</label>
           <input type="date" id="end_date" name="end_date" value="{{ notice_edit['enddate'] if notice_edit else next_date }}" min="{{todays_date}}" class="form-control" required>
         </div>
-      </p>
+
       <button type="submit" class="btn btn-lg btn-success">Submit</button>
     </div>
 </div>

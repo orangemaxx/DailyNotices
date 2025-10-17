@@ -2,7 +2,7 @@
   <div class="card" style="width: 25rem;">
     <div class="card-body">
       <h5 class="card-title">{{i['title']}}</h5>
-      <p class="card-text">{{i['body']|safe}}</p>
+      <div class="card-text">{{i['body']|safe}}</div>
       <div>
       <small><strong>{{i['catergory']}}</strong> • Posted By: <strong>
         {% if session['user'] %}
@@ -32,7 +32,7 @@
         <p>Are you sure you want to delete <strong>{{i['title']}}</strong>?</p>
       </div>
       <div class="modal-footer">
-        <form action="/delete", method="post">
+        <form action="/delete" method="post">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <input type="hidden" name="notice_id" value="{{i['notice_id']}}">
         <button type="submit" class="btn btn-danger">Delete</button>

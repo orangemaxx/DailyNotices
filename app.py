@@ -75,6 +75,7 @@ def index():
         "prev_date": prev_date, # for buttons
         "next_date": next_date
     }
+    session['current_page'] = "/"
     return render_template("index.html", **args) # render
 
 @app.route("/create", methods=['GET', 'POST']) # creating / editing post
@@ -88,7 +89,7 @@ def create():
             content = request.form.get('content')
             start_date = request.form.get('start_date')
             end_date = request.form.get("end_date")
-            existing_id = request.form.get("existing_id") # get all the arguments
+            existing_id = request.form.get("notice_id") # get all the arguments
 
             with create_connection() as connection: # create mysql connection
                 with connection.cursor() as cursor:
@@ -105,6 +106,8 @@ def create():
                         values = (session.get('user'), title, content[:2500], catergory, start_date, end_date,)
                         cursor.execute(query, values)
                 connection.commit()
+            if 'current_page' in session:
+                return redirect(session['current_page'])
             return redirect("/") # redirect home
         else: # if we are getting we are creating a new notice instead of updating database
             with create_connection() as connection:
@@ -140,6 +143,8 @@ def deleteNotice():
             """
             cursor.execute(query, (notice_id, session.get('user'))) # delete the notice but only if all this matches
         connection.commit() # commit
+    if 'current_page' in session:
+            return redirect(session['current_page'])
     return redirect("/") # send them home
 
 # Login Methods
@@ -180,9 +185,21 @@ def profile():
                     WHERE teacher_code = %s"""
                     cursor.execute(query, (session.get('user'))) # get the user info from database
                     result = cursor.fetchone()
+                with connection.cursor() as notice_cursor:
+                    query = """
+                        SELECT notices.*, teachers.lastname, teachers.prefix, teachers.firstname
+                        FROM notices
+                        INNER JOIN teachers ON notices.author=teachers.teacher_code
+                        WHERE author = %s
+                        ORDER BY startdate DESC
+                    """ # This gets the notices for the view date from the notices table
+                    notice_cursor.execute(query, (session.get('user'),))
+                    notices = notice_cursor.fetchall()
             args = {
-                "profile": result # set the result as the arguments
+                "profile": result, # set the result as the arguments
+                "notices": notices
             }
+            session['current_page'] = "/profile"
             return render_template("profile.html", **args)
         elif request.method == "POST": # if the method is post we wanna update the database
             data = request.form

@@ -11,7 +11,7 @@
         </li>
       </ul> 
       {% if session['user'] %} 
-      <form class="d-flex" role="login" action="/logout" method="post">
+      <form class="d-flex" action="/logout" method="post">
         <a href="/profile" class="nav-link text-dark px-2 py-1">Welcome: {{session.get('user')}}</a>
         <button class="btn btn-light btn-outline-danger" type="submit">Log out</button>
       </form> 
