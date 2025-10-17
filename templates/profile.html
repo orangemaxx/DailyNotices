@@ -8,15 +8,15 @@
     <form action="/profile" method="post">
         <div class="d-flex"><div class="mb-3 px-2">
     <label for="firstname" class="form-label">First Name</label>
-    <input type="text" class="form-control" id="firstname" name="first_name" required value="{{profile['firstname']}}">
+    <input type="text" class="form-control" id="firstname" name="first_name" required value="{{profile['firstname']}}" maxlength="45">
   </div>
 <div class="mb-3 px-2">
     <label for="last_name" class="form-label">Last Name</label>
-    <input type="text" class="form-control" id="last_name" name="last_name" required value="{{profile['lastname']}}">
+    <input type="text" class="form-control" id="last_name" name="last_name" required value="{{profile['lastname']}}" maxlength="45">
   </div>
 <div class="mb-3 px-2">
     <label for="prefix" class="form-label">Prefix</label>
-    <input type="text" class="form-control" id="prefix" name="prefix" required value="{{profile['prefix']}}">
+    <input type="text" class="form-control" id="prefix" name="prefix" required value="{{profile['prefix']}}" maxlength="7">
   </div></div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
